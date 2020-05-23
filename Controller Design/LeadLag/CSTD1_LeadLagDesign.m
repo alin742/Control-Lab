@@ -29,7 +29,7 @@
 
 %%
 clc
-clear all
+clear
 close all
 
 %% 1 Frequency Response
@@ -38,12 +38,12 @@ close all
 
 load IdentifiedSystem
 
-sys_tf = XXX;
+sys_tf = tf(sys);
 
 w_bode = logspace(-2,2,1000);
 
 % Plot the bode diagram of the system
-bode(XXX, w_bode)
+bode(sys_tf, w_bode)
 grid on
 hold on
 
@@ -57,7 +57,7 @@ hold on
 %
 % Define the bandwidth wb.
 % C: lead lag compensator
-wb = XXX;
+wb = 2;
 C = 1; %Initial controller 
 
 % Obtain the gain from the open loop plant that achieves the desired
