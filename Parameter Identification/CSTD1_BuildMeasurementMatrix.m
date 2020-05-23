@@ -41,7 +41,7 @@ Theta3p1 = [Theta3(2:end);Theta3(end)];
 
 Ts = 1e-3; % sampling time
 
-[B,A] = butter(6, 0.5, 'low');
+[B,A] = butter(6, 0.3, 'low');
 
 % Filter the mesurements
 Theta1_ff = filtfilt(B, A, Theta1);

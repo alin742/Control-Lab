@@ -43,7 +43,7 @@ close all
 % set2: 'validation_file', data to be used for system validation
 
 estimation_file = 'white_noise.mat';
-validation_file = 'step.mat';
+validation_file = 'validation.mat';
 
 load(estimation_file);
 

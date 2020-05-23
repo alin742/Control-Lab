@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.98"
+    ComputedModelVersion    "1.99"
     NumModelReferences	    0
     NumTestPointedSignals   0
     NumProvidedFunctions    0
@@ -19,11 +19,17 @@ Model {
     IsArchitectureModel	    0
     IsAUTOSARArchitectureModel 0
     NumParameterArguments   0
-    NumExternalFileReferences 1
+    NumExternalFileReferences 2
     ExternalFileReference {
       Reference		      "simulink/Model-Wide\nUtilities/DocBlock"
       Path		      "CSTD1_OpenLoopModel/DocBlock"
       SID		      "44"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "simulink/Sources/Band-Limited\nWhite Noise"
+      Path		      "CSTD1_OpenLoopModel/Excitation signal/Band-Limited White Noise"
+      SID		      "50"
       Type		      "LIBRARY_BLOCK"
     }
     OrderedModelArguments   1
@@ -84,8 +90,8 @@ Model {
 	  LoadSaveID		  "0"
 	  Extents		  [1328.0, 491.0]
 	  ZoomFactor		  [2.5]
-	  Offset		  [204.71623765273623, 31.097804095731391]
-	  SceneRectInView	  [204.71623765273623, 31.097804095731391, 531.2, 196.4]
+	  Offset		  [204.71623765273625, 31.097804095731405]
+	  SceneRectInView	  [204.71623765273625, 31.097804095731405, 531.2, 196.4]
 	}
 	Object {
 	  $ObjectID		  6
@@ -158,9 +164,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "nwegy"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Sat May 23 16:31:27 2020"
-  RTWModifiedTimeStamp	  512148805
-  ModelVersionFormat	  "1.%<AutoIncrement:98>"
+  LastModifiedDate	  "Sat May 23 21:50:59 2020"
+  RTWModifiedTimeStamp	  512171111
+  ModelVersionFormat	  "1.%<AutoIncrement:99>"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
   LibraryLinkDisplay	  "none"
@@ -1143,16 +1149,6 @@ Model {
       Realization	      "auto"
     }
     Block {
-      BlockType		      Step
-      Time		      "1"
-      Before		      "0"
-      After		      "1"
-      OutDataTypeStr	      "double"
-      SampleTime	      "-1"
-      VectorParams1D	      on
-      ZeroCross		      on
-    }
-    Block {
       BlockType		      SubSystem
       ShowPortLabels	      "FromPortIcon"
       Permissions	      "ReadWrite"
@@ -1240,7 +1236,7 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "250"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "49"
+    SIDHighWatermark	    "50"
     SimulinkSubDomain	    "Simulink"
     Block {
       BlockType		      Demux
@@ -1309,13 +1305,26 @@ Model {
 	ZoomFactor		"100"
 	SimulinkSubDomain	"Simulink"
 	Block {
-	  BlockType		  Step
-	  Name			  "Step"
-	  SID			  "49"
+	  BlockType		  Reference
+	  Name			  "Band-Limited\nWhite Noise"
+	  SID			  "50"
+	  Ports			  [0, 1]
 	  Position		  [565, 90, 595, 120]
-	  ZOrder		  4
-	  Time			  "0.2"
-	  SampleTime		  "0"
+	  ZOrder		  5
+	  LibraryVersion	  "1.465"
+	  SourceBlock		  "simulink/Sources/Band-Limited\nWhite Noise"
+	  SourceType		  "Band-Limited White Noise."
+	  SourceProductBaseCode	  "SL"
+	  RTWMemSecFuncInitTerm	  "Inherit from model"
+	  RTWMemSecFuncExecute	  "Inherit from model"
+	  RTWMemSecDataConstants  "Inherit from model"
+	  RTWMemSecDataInternal	  "Inherit from model"
+	  RTWMemSecDataParameters "Inherit from model"
+	  ContentPreviewEnabled	  on
+	  Cov			  "[0.000194]"
+	  Ts			  "0.001"
+	  seed			  "[23341]"
+	  VectorParams1D	  on
 	}
 	Block {
 	  BlockType		  Outport
@@ -1326,8 +1335,8 @@ Model {
 	  VectorParamsAs1DForOutWhenUnconnected	off
 	}
 	Line {
-	  ZOrder		  4
-	  SrcBlock		  "Step"
+	  ZOrder		  5
+	  SrcBlock		  "Band-Limited\nWhite Noise"
 	  SrcPort		  1
 	  DstBlock		  "Excitation [Nm]"
 	  DstPort		  1
