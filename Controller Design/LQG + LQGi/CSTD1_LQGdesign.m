@@ -29,7 +29,7 @@
 
 %%
 close all
-clear all
+clear
 clc
 
 %% 1 LQG Design

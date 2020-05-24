@@ -35,10 +35,9 @@ close all
 %% 1 Frequency Response
 %
 % Calculate the transfer function of the system.
-
 load IdentifiedSystem
-
-sys_tf = tf(sys);
+sys_all = tf(sys);
+sys_tf = sys_all(3);
 
 w_bode = logspace(-2,2,1000);
 
@@ -57,15 +56,25 @@ hold on
 %
 % Define the bandwidth wb.
 % C: lead lag compensator
+% syms a T
+% phi = 30;
+% fun = (a - 1)/(a + 1) - sin(deg2rad(phi));
+% solve(fun==0, a);
+% 
 wb = 2;
+% fun = 2/(T*sqrt(a)) - wb;
+% solve(fun==0, T);
+
 C = 1; %Initial controller 
 
 % Obtain the gain from the open loop plant that achieves the desired
 % bandwith. Plug this gain in C
 % hint: use evalfr()
-C = C*XXX;
+% s = tf('s');
+k = evalfr(sys_tf, wb);
+C = C*k;
 bode(sys_tf*C, w_bode)
-
+%%
 % Design a lead compensator to obtain the desired phase margin
 % hint: use makeweight() for lead and lag compensators.
 C = C*XXX;
