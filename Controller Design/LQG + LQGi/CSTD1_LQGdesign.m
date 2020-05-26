@@ -43,27 +43,27 @@ load IdentifiedSystem
 [A,B,C,D] = ssdata(sys);
 
 %Adjust the C matrix to have only the third output as the feedback signal
-C3 = XXX;
+C3 = C(3,:);
 
 %% 1.1 Observer
 %
 % Determine the Q and R matrices for the state estimation
-Q_lqe = XXX;
-R_lqe = XXX;
+Q_lqe = diag([0 1 0 1 0 1]);
+R_lqe = 0.0001;
 
 % Calculate the optimal state estimator gain L with the lqr() command
-L = XXX; 
+L = -lqr(A',C3', Q_lqe, R_lqe)'; 
 
 %% 1.2 State Feedback
 % Determine the Q and R matrices for the state feedback
-Q_lqr = XXX;
-R_lqr = XXX;
+Q_lqr = C'*C;
+R_lqr = 200;
 
 % Calculate the optimal state feedback gain F with the lqr() command
-F = XXX;
+F = -lqr(A, B, Q_lqr, R_lqr);
 
 % Calculate the prefilter gain.
-pre_v = XXX;
+pre_v = 0.1*(360/293.99);
 
 %% 1.3 Simulation
 %
@@ -99,7 +99,7 @@ grid on
 % Bode diagram of the closed-loop system
 % You can ignore the observer, since it is not controllable
 
-r2y = minreal(XXX);
+r2y = minreal(ss(A+B*F, B, C3, 0));
 
 bode(r2y)
 grid on
@@ -158,26 +158,26 @@ load IdentifiedSystem
 [A,B,C,D] = ssdata(sys);
 
 %Adjust the C matrix to have only the third output as the feedback signal
-C3 =XXX;
+C3 =C(3,:);
 
 %% 2.1 Augmented System
 %
 % Compute the augmented matrices
-Aaug = XXX;       
-Baug = XXX;
+Aaug = [A, zeros(6, 1); -C3, 0];
+Baug = [B; 0];
 
 %% 2.2 State Feedback with Integral Action
 %
 % Determine the Q and R matrices for the state feedback with integrator
-Qaug = XXX;
-Raug = XXX;
+Qaug = [C3, 1]'*[C3, 1];
+Raug = 5;
 
 % Compute the state feedback gain with integrator
-Fi = XXX;
+Fi = -lqr(Aaug, Baug, Qaug, Raug);
 
 % Separate the gains
-Ki = Fi(XXX); %Gain for the integrator
-F2 = Fi(XXX); %Gain for the states of the plant
+Ki = Fi(7); %Gain for the integrator
+F2 = Fi(1:6); %Gain for the states of the plant
 
 %% 2.3 Simulation
 %
@@ -212,11 +212,11 @@ grid on
 % Bode diagram of the closed-loop system
 % You can ignore the observer, since it is not controllable
 % Consider both, the state feedback and the integrator
+s = tf('s');
+integrator = Ki/s;
 
-integrator = XXX;
 
-
-r2y = feedback(XXX);
+r2y = feedback(integrator*r2y,-1);
 
 bode(r2y)
 grid on
