@@ -31,7 +31,9 @@
 % ---------------------------
 
 %%
-clear all; clc; close all
+clear;
+clc;
+close all
 
 %% I. Load and scale the plant
 % In the first step we load the plant which was identified in the previous task.
@@ -85,15 +87,16 @@ grid('on');
 % estimate them using an Luenberg observer.
 
 Q_obsv = diag([0 1 0 1]);
-R_obsv = 0.0001;
+R_obsv = diag([0.0001 0.0001]);
 
 L = -lqr(A',C', Q_obsv, R_obsv)'; 
 
 % Build observer system
-A_obsv = A+L*C;
-B_obsv = B;
-C_obsv = diag([1 1 1 1]);
-D_obsv = zeros(4,2);
+A_obsv = [A+L*C, zeros(4, 2);
+                    -C,         zeros(2, 2)];
+B_obsv = [B zeros(4, 2); 0 0 0 0; 0 0 0 0];
+C_obsv = [diag([1 1 1 1 ]), zeros(4, 2)];
+D_obsv = zeros(4,4);
 
 %% II.b Analysis of the observer 
 
@@ -105,13 +108,13 @@ damp(A_obsv);
 %
 
 Q = C'*C;
-R = 1;
+R = diag([0.01 0.01]);
 
 F = -lqr(A, B, Q, R);
 
 % Calculate Prefilter for Reference Tracking
 
-V = 0.15;
+V = 0.5;
 
 sys_cl = ss(A+B*F,B,C,D);
 
@@ -150,7 +153,7 @@ grid('on');
 %
 
 % Build augmented plant
-A_aug = [A, zeros(6, 1); -C3, 0];
+A_aug = [A, zeros(6, 1); -C, 0];
 B_aug = [B; 0];
 C_aug = C;
 D_aug = D;

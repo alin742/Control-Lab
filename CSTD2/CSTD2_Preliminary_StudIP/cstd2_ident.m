@@ -27,7 +27,7 @@
 % ---------------------------
 
 %%
-% clear all; clc; close all
+clear; clc; close all
 
 %% I. Setup some global Variables which will be needed later
 
