@@ -38,10 +38,10 @@ clear all; clc; close all
 % After that the system matrices are extrected and the number of state,
 % inputs and outputs are stored, cause we need them later.
 
-load d_steps.mat
+load models.mat
 
 % Choose the model for the controller design
-sys = ss(A,B,C,D);
+sys = ss1;
 
 % Extract the relevant matrices
 [A,B,C,D] = ssdata(sys);
@@ -54,7 +54,7 @@ no = size(C,1);
 %% I.b Design of a Prefilter for Reference Tracking 
 %
 
-V = 0.1*(360/293.99);
+V = 0.15;
 
 %% I.c Simulation of the Feed Forward Design
 %
@@ -84,16 +84,16 @@ grid('on');
 % states, which are not measured in general. For that reason we have to
 % estimate them using an Luenberg observer.
 
-Q_obsv = diag([0 1 0 1 0 1]);
+Q_obsv = diag([0 1 0 1]);
 R_obsv = 0.0001;
 
-L = -lqr(A',C3', Q_obsv, R_obsv)'; 
+L = -lqr(A',C', Q_obsv, R_obsv)'; 
 
 % Build observer system
-A_obsv = A;
+A_obsv = A+L*C;
 B_obsv = B;
-C_obsv = C;
-D_obsv = D;
+C_obsv = diag([1 1 1 1]);
+D_obsv = zeros(4,2);
 
 %% II.b Analysis of the observer 
 
@@ -105,15 +105,15 @@ damp(A_obsv);
 %
 
 Q = C'*C;
-R = 200;
+R = 1;
 
-F = -lqr(A, B, Q_lqr, R_lqr);
+F = -lqr(A, B, Q, R);
 
 % Calculate Prefilter for Reference Tracking
 
-V = 0.1*(360/293.99);
+V = 0.15;
 
-sys_cl = ss1;
+sys_cl = ss(A+B*F,B,C,D);
 
 %% III.b Analysis of the observer 
 %
