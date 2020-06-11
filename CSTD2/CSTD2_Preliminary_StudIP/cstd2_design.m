@@ -40,10 +40,10 @@ close all
 % After that the system matrices are extrected and the number of state,
 % inputs and outputs are stored, cause we need them later.
 
-load d_steps.mat
-
+load models.mat
+%%
 % Choose the model for the controller design
-sys = ss1;
+sys = sys_steps;
 
 % Extract the relevant matrices
 [A,B,C,D] = ssdata(sys);
@@ -61,7 +61,7 @@ V = 0.15;
 %% I.c Simulation of the Feed Forward Design
 %
 
-sys = ss1;
+sys = sys_steps;
 sim('cstd2_sim_ff');
 
 figure(1);
@@ -72,7 +72,7 @@ grid('on');
 
 % Simulation with an other plant
 
-sys = ss1;
+sys = sys_prbs_1;
 sim('cstd2_sim_ff');
 
 figure(2);
@@ -108,13 +108,13 @@ damp(A_obsv);
 %
 
 Q = C'*C;
-R = diag([0.01 0.01]);
+R = diag([1 0.01]);
 
 F = -lqr(A, B, Q, R);
 
 % Calculate Prefilter for Reference Tracking
 
-V = 0.5;
+V = diag([-0.01 0.05]);
 
 sys_cl = ss(A+B*F,B,C,D);
 
@@ -127,7 +127,7 @@ damp(sys_cl);
 %% III.c Simulation
 %
 
-sys = ss1;
+sys = sys_steps;
 sim('cstd2_sim_lqg');
 
 figure(3);
@@ -138,7 +138,7 @@ grid('on');
 
 % Simulation with an other plant
 
-sys = ss1;
+sys = sys_prbs_1;
 sim('cstd2_sim_lqg');
 
 figure(4);
@@ -151,25 +151,22 @@ grid('on');
 % The problem of the previous design is the steady controll offset.
 % To cope that it is important to add an integrator to the controller.
 %
-
+V = diag([-10 10]);
 % Build augmented plant
-A_aug = [A, zeros(6, 1); -C, 0];
-B_aug = [B; 0];
-C_aug = C;
+A_aug = [A, zeros(4, 2); -C, zeros(2)];
+B_aug = [B; zeros(2)];
+C_aug = [C, zeros(2)];
 D_aug = D;
 
 % Tuning Parameter
 Q_C = C'*C;
 
-Q_aug = [C3, 1]'*[C3, 1];
-R_aug = 5;
+Q_aug = [C, eye(2)]'*[C, eye(2)];
+R_aug = diag([0.005 0.01]);
 
 F_aug = -lqr(A_aug, B_aug, Q_aug, R_aug);
 
-F = -lqr(A, B, Q_lqr, R_lqr);
-Fi = -lqr(Aaug, Baug, Qaug, Raug);
-
-sys_cl_int = ss(A_aug+B_aug*Fi, B_aug, C_aug, 0);
+sys_cl_int = ss(A_aug+B_aug*F_aug, B_aug, C_aug, D_aug);
 
 %% IV.b Analysis of the new Design
 
