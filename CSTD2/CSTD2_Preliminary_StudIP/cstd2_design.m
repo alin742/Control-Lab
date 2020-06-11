@@ -40,7 +40,7 @@ close all
 % After that the system matrices are extrected and the number of state,
 % inputs and outputs are stored, cause we need them later.
 
-load models.mat
+load d_steps.mat
 
 % Choose the model for the controller design
 sys = ss1;

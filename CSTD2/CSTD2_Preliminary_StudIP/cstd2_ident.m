@@ -91,9 +91,9 @@ pause();
 
 %% IV. Save the identified models
 
-if (sys_steps.ts ~= 0) || (sys_chirp_1.ts ~= 0) || (sys_chirp_2.ts ~= 0) || (sys_prbs_1.ts ~= 0) || (sys_prbs_2.ts ~= 0) || (sys_noise_1.ts ~= 0) || (sys_noise_2.ts ~= 0) 
-    error('Please convert the systems to continuouse time');
-end
+% if (sys_steps.ts ~= 0) || (sys_chirp_1.ts ~= 0) || (sys_chirp_2.ts ~= 0) || (sys_prbs_1.ts ~= 0) || (sys_prbs_2.ts ~= 0) || (sys_noise_1.ts ~= 0) || (sys_noise_2.ts ~= 0) 
+%     error('Please convert the systems to continuouse time');
+% end
 
 save models.mat sys_steps sys_chirp_1 sys_chirp_2 sys_prbs_1 sys_noise_2 sys_prbs_1 sys_noise_2
 
