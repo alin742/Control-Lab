@@ -87,15 +87,13 @@ d_noise_2 = iddata([y_1, y_2], [u_1, u_2], t_s);
 
 systemIdentification;
 
-pause();
-
 %% IV. Save the identified models
 
 % if (sys_steps.ts ~= 0) || (sys_chirp_1.ts ~= 0) || (sys_chirp_2.ts ~= 0) || (sys_prbs_1.ts ~= 0) || (sys_prbs_2.ts ~= 0) || (sys_noise_1.ts ~= 0) || (sys_noise_2.ts ~= 0) 
 %     error('Please convert the systems to continuouse time');
 % end
 
-save models.mat sys_steps sys_chirp_1 sys_chirp_2 sys_prbs_1 sys_prbs_2 sys_noise_1 sys_noise_2
+save models3.mat sys_steps sys_chirp_1 sys_chirp_2 sys_prbs_1 sys_prbs_2 sys_noise_1 sys_noise_2
 
 %% V. Compare the models
 
@@ -124,3 +122,20 @@ legend({'steps','prbs1','noise1','prbs2','noise2','chirp1','chirp2'},'Location',
 % figure(2);
 % pzmap(sys_steps, sys_prbs_1);
 % legend({'steps','prbs1'},'Location','SouthWest');
+
+%% VI. Simulating the systems against their corresponding validation data
+sys = sys_prbs_1;
+data = detrend(d_prbs_1);
+[y1_pred, y2_pred] = sim(sys, data.u);
+
+figure(3)
+plot(data.y(:,1))
+plot(y1_pred)
+title('Output 1')
+legend('data', 'prediction')
+
+figure(4)
+plot(data.y(:,2))
+plot(y2_pred)
+title('Output 2')
+legend('data', 'prediction')
