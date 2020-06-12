@@ -43,7 +43,7 @@ close all
 load models4.mat
 %%
 % Choose the model for the controller design
-sys = sys_prbs_1;
+sys = sys_steps;
 
 % Extract the relevant matrices
 [A,B,C,D] = ssdata(sys);
@@ -56,12 +56,12 @@ no = size(C,1);
 %% I.b Design of a Prefilter for Reference Tracking 
 %
 
-V = diag([-0.1 0.7]);
+V = diag([-0.5 1]);
 
 %% I.c Simulation of the Feed Forward Design
 %
 
-sys = sys_steps;
+sys = sys_prbs_1;
 sim('cstd2_sim_ff');
 
 figure(1);
@@ -72,7 +72,7 @@ grid('on');
 
 % Simulation with an other plant
 
-sys = sys_prbs_1;
+sys = sys_noise_1;
 sim('cstd2_sim_ff');
 
 figure(2);
@@ -87,16 +87,16 @@ grid('on');
 % estimate them using an Luenberg observer.
 
 Q_obsv = eye(n);
-R_obsv = diag([0.0001 0.0001]);
+R_obsv = diag([10 10]);
 
 L = -lqr(A',C', Q_obsv, R_obsv)'; 
 
 % Build observer system
 A_obsv = [A+L*C, zeros(n, ni);
                     -C,         zeros(no, ni)];
-B_obsv = [B; zeros(no, ni)];
-C_obsv = [eye(n), zeros(n,no)];
-D_obsv = zeros(n);
+B_obsv = [B, zeros(n, no); zeros(no, ni+no)];
+C_obsv = [eye(n), zeros(n,ni)];
+D_obsv = zeros(n,no+ni);
 
 %% II.b Analysis of the observer 
 
@@ -108,13 +108,13 @@ damp(A_obsv);
 %
 
 Q = C'*C;
-R = diag([1 0.1]);
+R = diag([5 1]);
 
 F = -lqr(A, B, Q, R);
 
 % Calculate Prefilter for Reference Tracking
 
-V = diag([-0.01 1]);
+V = diag([-1 2]);
 
 sys_cl = ss(A+B*F,B,C,D);
 
@@ -127,7 +127,7 @@ damp(sys_cl);
 %% III.c Simulation
 %
 
-sys = sys_steps;
+sys = sys_prbs_1;
 sim('cstd2_sim_lqg');
 
 figure(3);
@@ -138,7 +138,7 @@ grid('on');
 
 % Simulation with an other plant
 
-sys = sys_prbs_1;
+sys = sys_noise_1;
 sim('cstd2_sim_lqg');
 
 figure(4);
@@ -151,20 +151,22 @@ grid('on');
 % The problem of the previous design is the steady controll offset.
 % To cope that it is important to add an integrator to the controller.
 %
-V = diag([-10 10]);
+V = diag([-0.01 1]);
 % Build augmented plant
-A_aug = [A, zeros(4, 2); -C, zeros(2)];
-B_aug = [B; zeros(2)];
-C_aug = [C, zeros(2)];
+A_aug = [A, zeros(n, no); -C, zeros(no,ni)];
+B_aug = [B; zeros(no)];
+C_aug = [C, zeros(no)];
 D_aug = D;
 
 % Tuning Parameter
 Q_C = C'*C;
 
 Q_aug = [C, eye(2)]'*[C, eye(2)];
-R_aug = diag([0.005 0.01]);
+R_aug = diag([0.001 0.001]);
 
 F_aug = -lqr(A_aug, B_aug, Q_aug, R_aug);
+F = F_aug(:, 1:n);
+Fi = F_aug(:, n+1:end);
 
 sys_cl_int = ss(A_aug+B_aug*F_aug, B_aug, C_aug, D_aug);
 
@@ -179,7 +181,7 @@ open('cstd2_sim_lqg_int');
 
 %% IV.c Simulation of the new design
 
-sys = ss1;
+sys = sys_prbs_1;
 sim('cstd2_sim_lqg_int');
 data_s1 = data; 
 
@@ -190,12 +192,12 @@ legend({'r_1','r_2','y_1','y_2'});
 grid('on');
 
 % Simulation with an other plant
-sys = ss1;
-sim('cstd2_sim_lqg_int');
-data_s2 = data; 
-
-figure(4);
-t = data(:,1);
-plot(t, data(:,2), t, data(:,3), t, data(:,4), t, data(:,5));
-legend({'r_1','r_2','y_1','y_2'});
-grid('on');
+% sys = ss1;
+% sim('cstd2_sim_lqg_int');
+% data_s2 = data; 
+% 
+% figure(4);
+% t = data(:,1);
+% plot(t, data(:,2), t, data(:,3), t, data(:,4), t, data(:,5));
+% legend({'r_1','r_2','y_1','y_2'});
+% grid('on');
