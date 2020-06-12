@@ -93,7 +93,7 @@ systemIdentification;
 %     error('Please convert the systems to continuouse time');
 % end
 
-save models3.mat sys_steps sys_chirp_1 sys_chirp_2 sys_prbs_1 sys_prbs_2 sys_noise_1 sys_noise_2
+save models4.mat sys_steps sys_chirp_1 sys_chirp_2 sys_prbs_1 sys_prbs_2 sys_noise_1 sys_noise_2
 
 %% V. Compare the models
 
@@ -124,8 +124,8 @@ legend({'steps','prbs1','noise1','prbs2','noise2','chirp1','chirp2'},'Location',
 % legend({'steps','prbs1'},'Location','SouthWest');
 
 %% VI. Simulating the systems against their corresponding validation data
-sys = sys_prbs_1;
-data = detrend(d_prbs_1);
+sys = sys_steps;
+data = detrend(d_steps);
 [y1_pred, y2_pred] = sim(sys, data.u);
 
 figure(3)
