@@ -151,7 +151,7 @@ grid('on');
 % The problem of the previous design is the steady controll offset.
 % To cope that it is important to add an integrator to the controller.
 %
-V = diag([-0.01 1]);
+V = diag([5 5]);
 % Build augmented plant
 A_aug = [A, zeros(n, no); -C, zeros(no,ni)];
 B_aug = [B; zeros(no)];
@@ -161,8 +161,8 @@ D_aug = D;
 % Tuning Parameter
 Q_C = C'*C;
 
-Q_aug = [C, eye(2)]'*[C, eye(2)];
-R_aug = diag([0.001 0.001]);
+Q_aug = blkdiag(Q_C, 0.1, 0.1);
+R_aug = diag([100 100]);
 
 F_aug = -lqr(A_aug, B_aug, Q_aug, R_aug);
 F = F_aug(:, 1:n);

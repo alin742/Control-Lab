@@ -89,9 +89,9 @@ systemIdentification;
 
 %% IV. Save the identified models
 
-% if (sys_steps.ts ~= 0) || (sys_chirp_1.ts ~= 0) || (sys_chirp_2.ts ~= 0) || (sys_prbs_1.ts ~= 0) || (sys_prbs_2.ts ~= 0) || (sys_noise_1.ts ~= 0) || (sys_noise_2.ts ~= 0) 
-%     error('Please convert the systems to continuouse time');
-% end
+if (sys_steps.ts ~= 0) || (sys_chirp_1.ts ~= 0) || (sys_chirp_2.ts ~= 0) || (sys_prbs_1.ts ~= 0) || (sys_prbs_2.ts ~= 0) || (sys_noise_1.ts ~= 0) || (sys_noise_2.ts ~= 0) 
+    error('Please convert the systems to continuouse time');
+end
 
 save models4.mat sys_steps sys_chirp_1 sys_chirp_2 sys_prbs_1 sys_prbs_2 sys_noise_1 sys_noise_2
 
@@ -110,32 +110,32 @@ figure(2);
 pzmap(sys_steps, sys_prbs_1, sys_noise_1, sys_prbs_2, sys_noise_2, sys_chirp_1, sys_chirp_2);
 legend({'steps','prbs1','noise1','prbs2','noise2','chirp1','chirp2'},'Location','SouthWest');
 
-% % Compare Bode Plots
-% figure(1);
-% b = bodeoptions();
-% b.XLim = {[1,250]};
-% b.YLim = {[-40 40]};
-% bodemag(sys_steps, sys_prbs_1);
-% legend({'steps','prbs1'},'Location','SouthWest');
-% 
-% % Compare Poles
-% figure(2);
-% pzmap(sys_steps, sys_prbs_1);
-% legend({'steps','prbs1'},'Location','SouthWest');
+% Compare Bode Plots
+figure(1);
+b = bodeoptions();
+b.XLim = {[1,250]};
+b.YLim = {[-40 40]};
+bodemag(sys_steps, sys_prbs_1);
+legend({'steps','prbs1'},'Location','SouthWest');
+
+% Compare Poles
+figure(2);
+pzmap(sys_steps, sys_prbs_1);
+legend({'steps','prbs1'},'Location','SouthWest');
 
 %% VI. Simulating the systems against their corresponding validation data
-sys = sys_steps;
-data = detrend(d_steps);
-[y1_pred, y2_pred] = sim(sys, data.u);
-
-figure(3)
-plot(data.y(:,1))
-plot(y1_pred)
-title('Output 1')
-legend('data', 'prediction')
-
-figure(4)
-plot(data.y(:,2))
-plot(y2_pred)
-title('Output 2')
-legend('data', 'prediction')
+% sys = sys_steps;
+% data = detrend(d_steps);
+% [y1_pred, y2_pred] = sim(sys, data.u);
+% 
+% figure(3)
+% plot(data.y(:,1))
+% plot(y1_pred)
+% title('Output 1')
+% legend('data', 'prediction')
+% 
+% figure(4)
+% plot(data.y(:,2))
+% plot(y2_pred)
+% title('Output 2')
+% legend('data', 'prediction')
