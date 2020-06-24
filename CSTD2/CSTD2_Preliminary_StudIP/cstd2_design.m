@@ -56,7 +56,7 @@ no = size(C,1);
 %% I.b Design of a Prefilter for Reference Tracking 
 %
 
-V = diag([-0.5 1]);
+V = -inv(C*inv(A)*B);
 
 %% I.c Simulation of the Feed Forward Design
 %
@@ -86,16 +86,15 @@ grid('on');
 % states, which are not measured in general. For that reason we have to
 % estimate them using an Luenberg observer.
 
-Q_obsv = eye(n);
-R_obsv = diag([10 10]);
+Q_obsv = B*B';
+R_obsv = diag([1 1]);
 
 L = -lqr(A',C', Q_obsv, R_obsv)'; 
 
 % Build observer system
-A_obsv = [A+L*C, zeros(n, ni);
-                    -C,         zeros(no, ni)];
-B_obsv = [B, zeros(n, no); zeros(no, ni+no)];
-C_obsv = [eye(n), zeros(n,ni)];
+A_obsv = A + L*C;
+B_obsv = [B, -L];
+C_obsv = eye(n);
 D_obsv = zeros(n,no+ni);
 
 %% II.b Analysis of the observer 
@@ -114,7 +113,7 @@ F = -lqr(A, B, Q, R);
 
 % Calculate Prefilter for Reference Tracking
 
-V = diag([-1 2]);
+V = -inv(C*inv(A+B*F)*B);
 
 sys_cl = ss(A+B*F,B,C,D);
 
