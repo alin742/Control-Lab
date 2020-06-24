@@ -56,7 +56,7 @@ no = size(C,1);
 %% I.b Design of a Prefilter for Reference Tracking 
 %
 
-V = diag([-0.5 1]);
+V = -inv(C*inv(A)*B);
 
 %% I.c Simulation of the Feed Forward Design
 %
@@ -87,7 +87,7 @@ grid('on');
 % estimate them using an Luenberg observer.
 
 Q_obsv = eye(n);
-R_obsv = diag([10 10]);
+R_obsv = diag([0.01 0.01]);
 
 L = -lqr(A',C', Q_obsv, R_obsv)'; 
 
@@ -108,13 +108,13 @@ damp(A_obsv);
 %
 
 Q = C'*C;
-R = diag([5 1]);
+R = diag([0.1 0.01]);
 
 F = -lqr(A, B, Q, R);
 
 % Calculate Prefilter for Reference Tracking
 
-V = diag([-1 2]);
+V = -inv(C*inv(A+B*F)*B);
 
 sys_cl = ss(A+B*F,B,C,D);
 
@@ -151,7 +151,6 @@ grid('on');
 % The problem of the previous design is the steady controll offset.
 % To cope that it is important to add an integrator to the controller.
 %
-V = diag([5 5]);
 % Build augmented plant
 A_aug = [A, zeros(n, no); -C, zeros(no,ni)];
 B_aug = [B; zeros(no)];
@@ -161,8 +160,8 @@ D_aug = D;
 % Tuning Parameter
 Q_C = C'*C;
 
-Q_aug = blkdiag(Q_C, 0.1, 0.1);
-R_aug = diag([100 100]);
+Q_aug = blkdiag(Q_C, 0.005, 0.001);
+R_aug = diag([0.0001 0.001]);
 
 F_aug = -lqr(A_aug, B_aug, Q_aug, R_aug);
 F = F_aug(:, 1:n);
