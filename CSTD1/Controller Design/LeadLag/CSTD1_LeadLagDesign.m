@@ -72,19 +72,20 @@ bode(sys_tf*C, w_bode)
 % Design a lead compensator to obtain the desired phase margin
 % hint: use makeweight() for lead and lag compensators.
 s = tf('s');
-C = C*(s+1)/((s)*(s+10));
+C = C*(s+1)/((s)*(0.1*s+1));
 bode(sys_tf*C, w_bode)
 
-
+%%
 % Design a roll-off filter (e.g. notch)
 % to reduce the gain of the resonant peaks.
 % make sure to use unity low frequency gain to not change the crossover,
 wn1 = 18;
-q1 = 1;
+q1 = 0.01;
 wn2 = 31;
-q2 = 2;
+q2 = 0.02;
 F1 = tf ([1 0 wn1^2] ,[1 q1*wn1 wn1^2]);
 F2 = tf ([1 0 wn2^2] ,[1 q2*wn2 wn2^2]);
+% bode(F1*F2)
 C = C*F1*F2;
 bode(sys_tf*C, w_bode)
 
@@ -124,13 +125,13 @@ grid on
 %
 % Bode diagram of the controller
 figure
-bode(XXX, w_bode)
+bode(C, w_bode)
 grid on
 title('Controller Bode Diagram');
 
 % Bode diagram of the closed-loop system
 figure
-bode(XXX, w_bode)
+bode(sys_tf*C, w_bode)
 grid on
 title('Closed Loop Bode Diagram');
 
