@@ -40,10 +40,10 @@ close all
 % After that the system matrices are extrected and the number of state,
 % inputs and outputs are stored, cause we need them later.
 
-load models4.mat
+load models.mat
 %%
 % Choose the model for the controller design
-sys = sys_steps;
+sys = sys_noise_2;
 
 % Extract the relevant matrices
 [A,B,C,D] = ssdata(sys);
@@ -57,6 +57,7 @@ no = size(C,1);
 %
 
 V = -inv(C*inv(A)*B);
+% V = 1;
 
 %% I.c Simulation of the Feed Forward Design
 %
@@ -72,7 +73,7 @@ grid('on');
 
 % Simulation with an other plant
 
-sys = sys_noise_1;
+sys = sys_prbs_2;
 sim('cstd2_sim_ff');
 
 figure(2);
@@ -87,7 +88,7 @@ grid('on');
 % estimate them using an Luenberg observer.
 
 Q_obsv = B*B';
-R_obsv = diag([1 1]);
+R_obsv = diag([0.1 0.1]);
 % Q_obsv = eye(n);
 % R_obsv = diag([0.01 0.01]);
 % 
@@ -109,8 +110,9 @@ damp(A_obsv);
 % In the next step the optimal state feeback gains are calculated.
 %
 
-Q = C'*C;
-R = diag([0.1 0.01]);
+% Q = C'*C;
+Q = blkdiag(2, 2, 1, 2);
+R = diag([1 5]);
 
 F = -lqr(A, B, Q, R);
 
@@ -140,7 +142,7 @@ grid('on');
 
 % Simulation with an other plant
 
-sys = sys_noise_1;
+sys = sys_prbs_2;
 sim('cstd2_sim_lqg');
 
 figure(4);
@@ -162,8 +164,8 @@ D_aug = D;
 % Tuning Parameter
 Q_C = C'*C;
 
-Q_aug = blkdiag(Q_C, 0.005, 0.001);
-R_aug = diag([0.0001 0.001]);
+Q_aug = blkdiag(Q_C, 0.1, 0.1);
+R_aug = diag([0.1 0.1]);
 
 F_aug = -lqr(A_aug, B_aug, Q_aug, R_aug);
 F = F_aug(:, 1:n);
@@ -192,13 +194,13 @@ plot(t, data(:,2), t, data(:,3), t, data(:,4), t, data(:,5));
 legend({'r_1','r_2','y_1','y_2'});
 grid('on');
 
-% Simulation with an other plant
-% sys = ss1;
-% sim('cstd2_sim_lqg_int');
-% data_s2 = data; 
-% 
-% figure(4);
-% t = data(:,1);
-% plot(t, data(:,2), t, data(:,3), t, data(:,4), t, data(:,5));
-% legend({'r_1','r_2','y_1','y_2'});
-% grid('on');
+%Simulation with an other plant
+sys = sys_prbs_2;
+sim('cstd2_sim_lqg_int');
+data_s2 = data; 
+
+figure(4);
+t = data(:,1);
+plot(t, data(:,2), t, data(:,3), t, data(:,4), t, data(:,5));
+legend({'r_1','r_2','y_1','y_2'});
+grid('on');
