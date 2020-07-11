@@ -38,5 +38,3 @@ D=[ 0 ;
 
 %%
 sys=ss(A,B,C,D);
-sys.InputName='Torque';
-sys.OutputName=['Theta1'; 'Theta2'; 'Theta3'];

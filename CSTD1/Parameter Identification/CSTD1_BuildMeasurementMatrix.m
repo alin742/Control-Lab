@@ -31,17 +31,21 @@
 %
 % Design a filter to filter measurement noise
 
-
-Theta1m1 = [0;Theta1(1:end-1)];
-Theta1p1 = [Theta1(2:end);Theta1(end)];
-Theta2m1 = [0;Theta2(1:end-1)];
-Theta2p1 = [Theta2(2:end);Theta2(end)];
-Theta3m1 = [0;Theta3(1:end-1)];
-Theta3p1 = [Theta3(2:end);Theta3(end)];
-
 Ts = 1e-3; % sampling time
 
-[B,A] = butter(6, 0.3, 'low');
+[B,A] = butter(6, 0.3);
+bode(B,A)
+
+
+Theta1m1 = Theta1(1:end-2);
+Theta1p1 = Theta1(3:end);
+Theta1k = Theta1(2:end-1);
+Theta2m1 = Theta2(1:end-2);
+Theta2p1 = Theta2(3:end);
+Theta2k = Theta2(2:end-1);
+Theta3m1 = Theta3(1:end-2);
+Theta3p1 = Theta3(3:end);
+Theta3k = Theta3(2:end-1);
 
 % Filter the mesurements
 Theta1_ff = filtfilt(B, A, Theta1);
@@ -49,15 +53,25 @@ Theta2_ff = filtfilt(B, A, Theta2);
 Theta3_ff = filtfilt(B, A, Theta3);
 Plant_input_u_ff = filtfilt(B, A, Plant_input_u);
 
+% Theta1m1 = Theta1_ff(1:end-2);
+% Theta1p1 = Theta1_ff(3:end);
+% Theta1k = Theta1_ff(2:end-1);
+% Theta2m1 = Theta2_ff(1:end-2);
+% Theta2p1 = Theta2_ff(3:end);
+% Theta2k = Theta2_ff(2:end-1);
+% Theta3m1 = Theta3_ff(1:end-2);
+% Theta3p1 = Theta3_ff(3:end);
+% Theta3k = Theta3_ff(2:end-1);
+
 % Calculate angular velocity from input vector in rad/s
 Theta1_dot = (Theta1p1 - Theta1m1)./(2*Ts);
 Theta2_dot = (Theta2p1 - Theta2m1)./(2*Ts);
 Theta3_dot = (Theta3p1 - Theta3m1)./(2*Ts);
 
 % Calculate angular acceleration from input vector in rad/s/s
-Theta1_ddot = (Theta1p1 + Theta1m1 - 2.*Theta1)./(Ts^2);
-Theta2_ddot = (Theta2p1 + Theta2m1 - 2.*Theta2)./(Ts^2);
-Theta3_ddot = (Theta3p1 + Theta3m1 - 2.*Theta3)./(Ts^2);
+Theta1_ddot = (Theta1p1 + Theta1m1 - (2.*Theta1k))./(Ts^2);
+Theta2_ddot = (Theta2p1 + Theta2m1 - (2.*Theta2k))./(Ts^2);
+Theta3_ddot = (Theta3p1 + Theta3m1 - (2.*Theta3k))./(Ts^2);
 
 % Filter Calculated angular velocity:
 Theta1_dot_ff = filtfilt(B, A, Theta1_dot);

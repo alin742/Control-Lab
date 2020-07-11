@@ -36,8 +36,7 @@ close all
 %
 % Calculate the transfer function of the system.
 load IdentifiedSystem
-sys_all = tf(sys);
-sys_tf = sys_all(3);
+sys_tf = tf(sys(3));
 
 w_bode = logspace(-2,2,1000);
 
@@ -57,7 +56,7 @@ hold on
 % Define the bandwidth wb.
 % C: lead lag compensator
 
-wb = 20;
+wb = 1.7/0.9; %1.7/0.9
 
 C = 1; %Initial controller 
 
@@ -65,14 +64,16 @@ C = 1; %Initial controller
 % bandwith. Plug this gain in C
 % hint: use evalfr()
 % s = tf('s');
-k = evalfr(sys_tf, wb);
+k = 1/evalfr(sys_tf, wb);
 C = C*k;
 bode(sys_tf*C, w_bode)
 %%
 % Design a lead compensator to obtain the desired phase margin
 % hint: use makeweight() for lead and lag compensators.
 s = tf('s');
-C = C*(s+1)/((s)*(0.1*s+1));
+const = 3; %3
+weight = makeweight(1/const, wb, const);
+C = C*weight;
 bode(sys_tf*C, w_bode)
 
 %%
@@ -80,9 +81,9 @@ bode(sys_tf*C, w_bode)
 % to reduce the gain of the resonant peaks.
 % make sure to use unity low frequency gain to not change the crossover,
 wn1 = 18;
-q1 = 0.01;
+q1 = 0.7; %0.7
 wn2 = 31;
-q2 = 0.02;
+q2 = 1.1; %1.1
 F1 = tf ([1 0 wn1^2] ,[1 q1*wn1 wn1^2]);
 F2 = tf ([1 0 wn2^2] ,[1 q2*wn2 wn2^2]);
 % bode(F1*F2)
@@ -139,10 +140,10 @@ title('Closed Loop Bode Diagram');
 % Compute the corresponding transfer functions from the output/input
 % disturbances to the measured signal
 figure
-bode(XXX, w_bode)
+bode(1/(1+sys_tf*C), w_bode)
 grid on
 hold on
-bode(XXX, w_bode)
+bode(sys_tf/(1+sys_tf*C), w_bode)
 title('Output and Input Disturbance Rejection Bode Diagram');
 
 %% 5 Disturbance Rejection

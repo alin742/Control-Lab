@@ -37,7 +37,7 @@ close all
 % CSTD1_OpenLoopModel.slx
 % Save the data as .mat files containing:
 % 'Plant_input_u', 'Theta1', 'Theta2', 'Theta3'.
-% Dimensions must be [Nm] and [deg], respectively.
+% Dimensions must be [Nm] and [deg], respectively
 % A sampling time Ts = 1ms is assumed.
 % set1: 'estimation_file', data to be used for parameter identification
 % set2: 'validation_file', data to be used for system validation
@@ -66,7 +66,7 @@ p = pinv(M)*Torque;
 J1 = p(1);
 J2 = p(2);
 J3 = p(3);
-d1 = p(4);
+d1 = -p(4);
 d2 = p(5);
 d3 = p(6);
 k1 = p(7);
