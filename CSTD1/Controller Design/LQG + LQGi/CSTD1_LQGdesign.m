@@ -48,22 +48,24 @@ C3 = C(3,:);
 %% 1.1 Observer
 %
 % Determine the Q and R matrices for the state estimation
-Q_lqe = diag([0 1 0 1 0 1]);
-R_lqe = 0.0001;
+% Q_lqe = diag([1 1 1 1 1 1]);
+Q_lqe = B*B';
+R_lqe = 0.001;
 
 % Calculate the optimal state estimator gain L with the lqr() command
 L = -lqr(A',C3', Q_lqe, R_lqe)'; 
 
 %% 1.2 State Feedback
 % Determine the Q and R matrices for the state feedback
-Q_lqr = C'*C;
-R_lqr = 200;
+% Q_lqr = C'*C;
+Q_lqr = blkdiag(0, 0.4, 0, 0.7, 2, 0);
+R_lqr = 2;
 
 % Calculate the optimal state feedback gain F with the lqr() command
 F = -lqr(A, B, Q_lqr, R_lqr);
 
 % Calculate the prefilter gain.
-pre_v = 0.1*(360/293.99);
+pre_v = -1/(C3*inv(A+B*F)*B);
 
 %% 1.3 Simulation
 %
@@ -169,8 +171,9 @@ Baug = [B; 0];
 %% 2.2 State Feedback with Integral Action
 %
 % Determine the Q and R matrices for the state feedback with integrator
-Qaug = [C3, 1]'*[C3, 1];
-Raug = 5;
+% Qaug = [C3, 1]'*[C3, 1];
+Qaug = blkdiag(0, 0.1, 0, 0.1, 1, 0.1, 3);
+Raug = 0.001;
 
 % Compute the state feedback gain with integrator
 Fi = -lqr(Aaug, Baug, Qaug, Raug);
